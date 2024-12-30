@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 LED Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ESP32 LED Control</h1>
+    <p>Current LED State: <span id="ledState">Loading...</span></p>
+    
+    <button onclick="toggleLED('on')">Turn On LED</button>
+    <button onclick="toggleLED('off')">Turn Off LED</button>
+
+    <script>
+        // Function to fetch the data from data.json and update the page
+        function fetchLEDState() {
+            fetch('data.json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('ledState').innerText = data.led.charAt(0).toUpperCase() + data.led.slice(1);
+                })
+                .catch(error => {
+                    console.error('Error fetching LED state:', error);
+                    document.getElementById('ledState').innerText = 'Error';
+                });
+        }
+
+        // Function to toggle LED state by updating data.json
+        function toggleLED(state) {
+            fetch(`updateState.php?led=${state}`)
+                .then(response => {
+                    if (response.ok) {
+                        fetchLEDState(); // Update the displayed state
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating LED state:', error);
+                });
+        }
+
+        // Fetch the initial LED state when the page loads
+        fetchLEDState();
+    </script>
+
+</body>
+</html>
